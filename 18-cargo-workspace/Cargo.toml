@@ -1,0 +1,17 @@
+# this folder contains a workspace with many sub-projects
+# sub-projects will not have a target folder or Cargo.lock file, just the root workspace will
+# sub-project executables and libs will be inside target folder
+# cargo build will compile all sub-projects use -p flag to compile just that one
+# cargo build -p cargo_workspace_api
+[workspace]
+resolver = "2" # to fix a warning
+
+# sub-projects in this workspace are automatically added here is created like:
+# > cargo new --vcs none cargo_workspace_api
+# > cargo new --vcs none cargo_workspace_web
+# > cargo new --vcs none --lib cargo_workspace_shared
+members = [
+    "cargo_workspace_api",
+    "cargo_workspace_web",
+    "cargo_workspace_shared"
+]

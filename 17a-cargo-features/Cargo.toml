@@ -1,0 +1,21 @@
+[package]
+name = "cargo-features-lib"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+# marked as optional in order to import them depending on the feature selected
+serde = { version = "1.0", features = ["derive"], optional = true }
+rgb = { version = "0.8.25", features = ["serde"], optional = true }
+
+[features]
+# color feature will be enabled by default
+# default is empty by default so no feature is enabled if not set
+default = ["color"]
+# this feature only imports rgb dependency
+color = ["dep:rgb"]
+# this feature only imports color feature and also serde dependency
+# enable serde only if rgb dependency was enabled by something else (color feature in this case)
+shapes = ["color", "dep:serde", "rgb?/serde"]

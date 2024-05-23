@@ -1,0 +1,10 @@
+[package]
+name = "error_handling_libraries"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+log = "0.4" # logger façade
+env_logger = "0.11" # logger implementation based on environment variables
+thiserror = "1.0" # provides error macro
+anyhow = "1.0" # easy idiomatic error handling

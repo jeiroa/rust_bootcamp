@@ -1,0 +1,7 @@
+[package]
+name = "cargo_workspace_api"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+cargo_workspace_shared = { path = "../cargo_workspace_shared" }

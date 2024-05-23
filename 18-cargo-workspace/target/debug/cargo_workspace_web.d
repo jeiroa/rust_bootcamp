@@ -1,0 +1,1 @@
+/home/jeiroa/projects/vscode/rust/bootcamp/18-cargo-workspace/target/debug/cargo_workspace_web: /home/jeiroa/projects/vscode/rust/bootcamp/18-cargo-workspace/cargo_workspace_shared/src/lib.rs /home/jeiroa/projects/vscode/rust/bootcamp/18-cargo-workspace/cargo_workspace_web/src/main.rs

@@ -1,0 +1,8 @@
+[package]
+name = "error_handling"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+log = "0.4.21" # logger façade
+env_logger = "0.11.3" # logger implementation based on environment variables

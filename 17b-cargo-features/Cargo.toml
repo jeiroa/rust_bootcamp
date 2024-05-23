@@ -1,0 +1,11 @@
+[package]
+name = "cargo-features-client"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+# default features are enabled by default
+# add desired features via the "features" attribute
+cargo-features-lib = { path ="../17a-cargo-features", default-features = false, features = ["shapes"] }
