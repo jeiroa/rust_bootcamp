@@ -56,10 +56,26 @@ fn handled_thread_sleep() {
     handle.join().unwrap();
 }
 
+fn move_variable_into_thread() {
+    let message = "Test message".to_owned();
+
+    // it does not compile without move because the closure borrowed the message
+    // and it might happen that the main thread lives longer than the spawn thread
+    // so the spawned thread might be pointing to a dangled reference
+    // this way, message must be moved into the closure so it takes ownership of it
+    let handle = thread::spawn(move || {
+        println!("{message}");
+    });
+
+    handle.join().unwrap();
+}
+
 fn main() {
     unhandled_thread();
 
     handled_thread();
 
     handled_thread_sleep();
+
+    move_variable_into_thread();
 }
