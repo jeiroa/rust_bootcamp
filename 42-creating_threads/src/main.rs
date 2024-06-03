@@ -1,4 +1,4 @@
-use std::{thread, time::Duration}; // thread module must be imported
+use std::{sync::mpsc, thread, time::Duration}; // thread module must be imported
 
 // In this method a new thread might be created or not because the main thread might finish before it is created.
 // It might happen that the thread is created but the loop does not complete because the main thread finishes before it.
@@ -70,6 +70,36 @@ fn move_variable_into_thread() {
     handle.join().unwrap();
 }
 
+fn message_passing() {
+    let sentences = [
+        "!dlroW wolleH".to_owned(),
+        ".tsurT eW tsuR nI".to_owned(),
+        "!tsuR edoC s'teL".to_owned(),
+        "!tsuB ro tsuR".to_owned()
+    ];
+
+    let (tx, rx) = mpsc::channel();
+
+    for s in sentences {
+        // tx must be cloned because it is moved into the closure on every loop
+        let tx_clone = tx.clone();
+
+        thread::spawn(move || {
+            let reversed: String = s.chars().rev().collect();
+            // Err is returned if the receiver is already dropped
+            tx_clone.send(reversed).unwrap();
+        });
+    }
+
+    // dispose the channel sender because it is no longer necessary
+    drop(tx); // otherwise the main thread will be blocked
+
+    // this loop blocks every time next method is called waiting for a message
+    for sentence in rx.iter() {
+        println!("{sentence}");
+    }
+}
+
 fn main() {
     unhandled_thread();
 
@@ -78,4 +108,6 @@ fn main() {
     handled_thread_sleep();
 
     move_variable_into_thread();
+
+    message_passing();
 }
