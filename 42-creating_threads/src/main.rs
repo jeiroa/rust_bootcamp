@@ -1,4 +1,4 @@
-use std::{sync::mpsc, thread, time::Duration}; // thread module must be imported
+use std::{sync::{mpsc, Arc, Mutex}, thread, time::Duration}; // thread module must be imported
 
 // In this method a new thread might be created or not because the main thread might finish before it is created.
 // It might happen that the thread is created but the loop does not complete because the main thread finishes before it.
@@ -100,6 +100,67 @@ fn message_passing() {
     }
 }
 
+#[derive(Debug)]
+struct Database {
+    connections: Vec<u32>,
+}
+
+impl Database {
+    fn new() -> Database {
+        Database { connections: vec![] }
+    }
+
+    fn connect(&mut self, id: u32) {
+        self.connections.push(id);
+    }
+}
+
+fn use_mutual_exclusion_locks() {
+    // use a mutex to safely share a resource
+    let db = Mutex::new(Database::new());
+
+    {
+        // firstly it is necessary to get the mutex lock
+        // thread is blocked until the lock is released
+        let mut db_lock = db.lock().unwrap(); // a LockResult is returned
+
+        // now it is possible to safely use the shared resource throught the lock variable
+        db_lock.connect(1);
+    } // lock is automaically released when it goes out of scope (MutexGuard implements Drop trait)
+}
+
+// share a database connection with all interested threads
+fn share_state_between_threads() {
+    // Mutex must be within a smart pointer in order to share the same instance in the closure below
+    // if Rc is not used, the closure will complain about db to be moved more than once into it due to it is defined
+    // within a for loop (the variable will be moved into several closures which is not allowed)
+    // NOTE: Rc smart pointer cannot be used because it is not thread-safe so Arc is used instead
+    let db = Arc::new(Mutex::new(Database::new()));
+
+    let mut handles = vec![];
+
+    for i in 0..10 {
+        let db = Arc::clone(&db); // now it is possible to clone the smart pointer so a new one is moved into the closure every time but containing the same Mutex
+
+        let handle = thread::spawn(move || {
+            let mut db_lock = db.lock().unwrap();
+
+            db_lock.connect(i);
+        }); // lock is released here
+
+        handles.push(handle);
+    }
+
+    for handle in handles {
+        handle.join().unwrap();
+    }
+
+    let db_lock = db.lock().unwrap();
+
+    println!("{db_lock:?}"); // print the content of the lock which is a Database instance
+    // NOTE connections will be pushed in a non-deterministic order
+}
+
 fn main() {
     unhandled_thread();
 
@@ -110,4 +171,8 @@ fn main() {
     move_variable_into_thread();
 
     message_passing();
+
+    use_mutual_exclusion_locks();
+
+    share_state_between_threads();
 }
