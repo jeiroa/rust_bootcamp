@@ -76,8 +76,49 @@ async fn tokio_tasks() {
     }
 }
 
+fn expensive_computation() {
+    let mut _i = 0;
+
+    println!("Expensive computation on {}-{:?}", thread::current().name().unwrap(), thread::current().id());
+
+    for _ in 0..400_000_000 {
+        _i += 1;
+    }
+
+    println!("Expensive computation done on {}-{:?}", thread::current().name().unwrap(), thread::current().id());
+}
+
+#[tokio::main(flavor = "multi_thread", worker_threads = 4)]
+async fn tokio_expensive_computation() {
+    let mut handles = vec![];
+
+    // prepare cheap computation tasks
+    for i in 0..5 {
+        let handle = tokio::spawn(async move {
+            my_function(i).await;
+        });
+
+        handles.push(handle);
+    }
+
+    // as expensive computation tasks will block a thread longer than other tasks
+    handles.push(tokio::spawn(async {
+        // a spawn_blocking should be used so a separated working thread will be use to run this task
+        // this way, working threads on the normal pool will not be blocked by this task
+        let _res = tokio::task::spawn_blocking(|| {
+            expensive_computation();
+        }).await;
+    }));
+
+    for handle in handles {
+        handle.await.unwrap();
+    }
+}
+
 fn main() {
     serial_tokio();
     println!("----------------------------------");
     tokio_tasks();
+    println!("----------------------------------");
+    tokio_expensive_computation();
 }
