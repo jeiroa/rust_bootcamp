@@ -1,6 +1,7 @@
 use std::{thread, time::Duration};
 
 use tokio::time::sleep;
+use tokio_stream::StreamExt; // necessary for Tokio Streams
 
 /// async keyword actually provides the following code:
 /// 
@@ -115,10 +116,26 @@ async fn tokio_expensive_computation() {
     }
 }
 
+#[tokio::main]
+async fn tokio_streams() {
+    let mut stream =
+        tokio_stream::iter(["Let's", "Rock", "n", "Roll"]) // streams are like iterators
+            .map(|s| s.to_ascii_uppercase());
+
+    // but they do not implement any iterator trait so for cannot be used
+    while let Some(s) = stream.next().await {
+        println!("{s}");
+    }
+
+    // main use case of Tokio streams is a TcpStream server
+}
+
 fn main() {
     serial_tokio();
     println!("----------------------------------");
     tokio_tasks();
     println!("----------------------------------");
     tokio_expensive_computation();
+    println!("----------------------------------");
+    tokio_streams();
 }
