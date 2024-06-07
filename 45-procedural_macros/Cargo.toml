@@ -11,4 +11,5 @@ proc-macro = true
 [dependencies]
 quote = "1.0" # turns syntax tree data structures (Rust code) into tokens of source code
 chrono = "0.4"
-syn = "2.0" # parses s stream of Rust tokens into a syntax tree of source code
+syn = { version = "2.0", features = ["full"] } # parses s stream of Rust tokens into a syntax tree of source code
+darling = "0.20"

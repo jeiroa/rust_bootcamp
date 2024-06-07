@@ -45,8 +45,27 @@ fn macro_custom_derive() {
     }
 }
 
+#[derive(Debug)]
+struct Product {
+    name: String,
+    price: u32,
+}
+
+#[log_call(verbose)]
+fn buy_product(product: Product, discount: u32) {
+
+}
+
+fn macro_attribute() {
+    let laptop = Product { name: "MacBook Pro".to_owned(), price: 2_000 };
+
+    buy_product(laptop, 20);
+}
+
 fn main() {
     macro_function();
     println!("-----------------------");
     macro_custom_derive();
+    println!("-----------------------");
+    macro_attribute();
 }
