@@ -5,12 +5,14 @@ use anyhow::{anyhow, Ok, Result};
 use crate::models::{DBState, Epic, Story, Status};
 
 pub struct JiraDatabase {
-    database: Box<dyn Database>
+    pub database: Box<dyn Database>
 }
 
 impl JiraDatabase {
     pub fn new(file_path: String) -> Self {
-        Self { database: Box::new(JSONFileDatabase { file_path }) }
+        Self {
+            database: Box::new(JSONFileDatabase { file_path })
+        }
     }
 
     pub fn read_db(&self) -> Result<DBState> {
@@ -97,7 +99,7 @@ impl JiraDatabase {
     }
 }
 
-trait Database {
+pub trait Database {
     fn read_db(&self) -> Result<DBState>;
     fn write_db(&self, db_state: &DBState) -> Result<()>;
 }
@@ -133,7 +135,9 @@ pub mod test_utils {
 
     impl MockDB {
         pub fn new() -> Self {
-            Self { last_written_state: RefCell::new(DBState { last_item_id: 0, epics: HashMap::new(), stories: HashMap::new() }) }
+            Self {
+                last_written_state: RefCell::new(DBState { last_item_id: 0, epics: HashMap::new(), stories: HashMap::new() })
+            }
         }    
     }
 

@@ -1,6 +1,19 @@
-use std::collections::HashMap;
-
 use serde::{Deserialize, Serialize};
+use std::{collections::HashMap, fmt::Display};
+
+#[derive(Debug, PartialEq, Eq)]
+pub enum Action {
+    NavigateToEpicDetail { epic_id: u32 },
+    NavigateToStoryDetail { epic_id: u32, story_id: u32 },
+    NavigateToPreviousPage,
+    CreateEpic,
+    UpdateEpicStatus { epic_id: u32 },
+    DeleteEpic { epic_id: u32 },
+    CreateStory { epic_id: u32 },
+    UpdateStoryStatus { story_id: u32 },
+    DeleteStory { epic_id: u32, story_id: u32 },
+    Exit,
+}
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub enum Status {
@@ -8,6 +21,17 @@ pub enum Status {
     InProgress,
     Resolved,
     Closed,
+}
+
+impl Display for Status {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match &self {
+            Self::Open => write!(f, "OPEN"),
+            Self::InProgress => write!(f, "IN PROGRESS"),
+            Self::Resolved => write!(f, "RESOLVED"),
+            Self::Closed => write!(f, "CLOSED"),
+        }
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
